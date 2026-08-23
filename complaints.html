@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <script>
+    (function() {
+      const saved = localStorage.getItem("theme") || "light";
+      document.documentElement.setAttribute("data-theme", saved);
+
+      // Page Guard: restrict page access to logged-in users only
+      const session = localStorage.getItem("sahayak_session");
+      if (!session) {
+        sessionStorage.setItem("login_required_toast", "true");
+        window.location.href = "index.html";
+      }
+    })();
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Sahayak • Submit Complaint</title>
+  <link rel="stylesheet" href="Assets/styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="index.html">
+      <span class="brand-mark">📣</span>
+      <span class="brand-name">Sahayak</span>
+    </a>
+
+    <nav class="nav">
+      <a class="nav-link" href="index.html">Home</a>
+      <a class="nav-link" href="explore.html">Explore</a>
+      <a class="nav-link active" href="complaints.html">Complaints</a>
+      <a class="nav-link" href="dashboard.html">Dashboard</a>
+    </nav>
+
+    <div class="topbar-actions" style="gap: 16px;">
+      <button class="btn ghost" id="themeToggle" type="button" style="font-size: 18px; padding: 6px;">🌙</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="page-head">
+      <div>
+        <h1>Submit New Complaints</h1>
+        <p class="muted">Your personal data (Name & Aadhaar) stays strictly on your local browser. All inputs are masked and editable.</p>
+      </div>
+      <div style="display: flex; gap: 10px;">
+        <button class="btn outline" id="addRow">➕ Add New Row</button>
+      </div>
+    </section>
+
+    <section class="table-wrap">
+      <table class="table" id="complaintsTable">
+        <thead>
+          <tr>
+            <th style="width: 50px;">S.No.</th>
+            <th style="width: 180px;">User Name</th>
+            <th style="width: 180px;">Aadhaar Number</th>
+            <th>Problem Category & Details</th>
+            <th style="width: 180px;">Actions & Priority</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- rows inserted by JS -->
+        </tbody>
+      </table>
+
+      <div class="table-foot">
+        <div class="muted small" id="rowInfo"></div>
+        <button class="btn primary" id="submitAll">Submit All Complaints</button>
+      </div>
+    </section>
+  </main>
+
+  <script src="Assets/app.js"></script>
+</body>
+</html>

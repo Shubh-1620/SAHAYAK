@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <script>
+    (function() {
+      const saved = localStorage.getItem("theme") || "light";
+      document.documentElement.setAttribute("data-theme", saved);
+
+      // Page Guard: restrict page access to logged-in users only
+      const session = localStorage.getItem("sahayak_session");
+      if (!session) {
+        sessionStorage.setItem("login_required_toast", "true");
+        window.location.href = "index.html";
+      }
+    })();
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sahayak • Explore by State</title>
+  <link rel="stylesheet" href="Assets/styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="index.html">
+      <span class="brand-mark">🗺️</span>
+      <span class="brand-name">Sahayak</span>
+    </a>
+
+    <nav class="nav">
+      <a class="nav-link" href="index.html">Home</a>
+      <a class="nav-link active" href="explore.html">Explore</a>
+      <a class="nav-link" href="complaints.html">Complaints</a>
+      <a class="nav-link" href="dashboard.html">Dashboard</a>
+    </nav>
+
+    <div class="topbar-actions" style="gap: 16px;">
+      <button class="btn ghost" id="themeToggle" type="button" style="font-size: 18px; padding: 6px;">🌙</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="grid-2">
+      <!-- Search Panel -->
+      <aside class="panel">
+        <h2>Explore India</h2>
+        <p class="muted">Search complaints by state and district levels.</p>
+        
+        <div class="field" style="position: relative;">
+          <label for="stateSearch">Search State</label>
+          <input class="input" id="stateSearch" placeholder="Type state name (e.g. Maharashtra)..." autocomplete="off" />
+          <div id="stateSuggestions" class="suggestions-list"></div>
+        </div>
+
+        <div class="field">
+          <label>Popular States</label>
+          <div class="chips">
+		<button class="chip" data-state="Andhra Pradesh" type="button">Andhra Pradesh</button>
+		<button class="chip" data-state="Arunachal Pradesh" type="button">Arunachal Pradesh</button>
+		<button class="chip" data-state="Assam" type="button">Assam</button>
+		<button class="chip" data-state="Bihar" type="button">Bihar</button>
+		<button class="chip" data-state="Chhattisgarh" type="button">Chhattisgarh</button>
+		<button class="chip" data-state="Goa" type="button">Goa</button>
+		<button class="chip" data-state="Gujarat" type="button">Gujarat</button>
+		<button class="chip" data-state="Haryana" type="button">Haryana</button>
+		<button class="chip" data-state="Himachal Pradesh" type="button">Himachal Pradesh</button>
+		<button class="chip" data-state="Jharkhand" type="button">Jharkhand</button>
+		<button class="chip" data-state="Karnataka" type="button">Karnataka</button>
+		<button class="chip" data-state="Kerala" type="button">Kerala</button>
+		<button class="chip" data-state="Madhya Pradesh" type="button">Madhya Pradesh</button>
+		<button class="chip" data-state="Maharashtra" type="button">Maharashtra</button>
+		<button class="chip" data-state="Manipur" type="button">Manipur</button>
+		<button class="chip" data-state="Meghalaya" type="button">Meghalaya</button>
+		<button class="chip" data-state="Mizoram" type="button">Mizoram</button>
+		<button class="chip" data-state="Nagaland" type="button">Nagaland</button>
+		<button class="chip" data-state="Odisha" type="button">Odisha</button>
+		<button class="chip" data-state="Punjab" type="button">Punjab</button>
+		<button class="chip" data-state="Rajasthan" type="button">Rajasthan</button>
+		<button class="chip" data-state="Sikkim" type="button">Sikkim</button>
+		<button class="chip" data-state="Tamil Nadu" type="button">Tamil Nadu</button>
+		<button class="chip" data-state="Telangana" type="button">Telangana</button>
+		<button class="chip" data-state="Tripura" type="button">Tripura</button>
+		<button class="chip" data-state="Uttar Pradesh" type="button">Uttar Pradesh</button>
+		<button class="chip" data-state="Uttarakhand" type="button">Uttarakhand</button>
+		<button class="chip" data-state="West Bengal" type="button">West Bengal</button>
+		
+          </div>
+        </div>
+
+        <div class="field" style="margin-top:20px;">
+          <label for="districtSearch">Filter by District</label>
+          <input class="input" id="districtSearch" placeholder="Search for a district..." disabled />
+        </div>
+
+        <div style="margin-top:24px; display:flex; gap:10px;">
+          <button class="btn primary outline" id="resetView" style="width:100%;" type="button">🔄 Reset View</button>
+        </div>
+      </aside>
+
+      <!-- Results View -->
+      <section class="panel" style="display: flex; flex-direction: column; gap: 16px;">
+        <div class="map-placeholder" id="mapView" style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; position:relative; min-height:220px; background: linear-gradient(135deg, color-mix(in srgb, var(--primary) 12%, var(--card)), var(--card)); border: 1px dashed var(--primary); border-radius: var(--radius);">
+          <div style="font-size:48px;">🗺️</div>
+          <div style="text-align:center;">
+            <h3 style="margin:0 0 4px; font-size:22px;" id="mapStateName">Select a State</h3>
+            <p class="muted" style="margin:0;" id="mapStateCount">Click on any state chip to view local issues</p>
+          </div>
+        </div>
+
+        <div>
+          <h3 style="margin:0 0 10px 0;">Local Registered Issues</h3>
+          <div class="table-wrap">
+            <table class="table" id="exploreTable">
+              <thead>
+                <tr>
+                  <th style="width:60px;">#</th>
+                  <th>UserName</th>
+                  <th>Aadhaar</th>
+                  <th>Location</th>
+                  <th>Category</th>
+                  <th>Details</th>
+                  <th style="width:100px; text-align:center;">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Rows filled by JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </section>
+
+    <footer class="footer muted small" style="margin-top:24px;">
+      <div>Status: Connected (Local Offline Database)</div>
+      <div>© 2026 Sahayak Smart Complaint Portal</div>
+    </footer>
+  </main>
+
+  <!-- Custom Verification Modal -->
+  <div id="deleteModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(4px);">
+    <div class="panel" style="width: min(400px, 90%); display: flex; flex-direction: column; gap: 16px; padding: 24px; border-radius: var(--radius); box-shadow: var(--shadow); background: var(--card); border: 1px solid var(--border);">
+      <h3 style="margin: 0; display: flex; align-items: center; gap: 8px;">🔒 Verify Identity</h3>
+      <p class="muted small" style="margin: 0; line-height: 1.5;">To delete this complaint, please enter the registered 12-digit Aadhaar number OR the Host passcode.</p>
+      
+      <div class="field" style="margin-top: 10px;">
+        <label for="verificationCode" style="font-weight: 800; display: block; margin-bottom: 6px;">Aadhaar or Host Passcode</label>
+        <input type="password" class="input" id="verificationCode" placeholder="Enter Aadhaar or Admin Passcode" autocomplete="off" style="width: 100%; padding: 11px 12px; border-radius: 12px; border: 1px solid var(--border); background: color-mix(in srgb, var(--card) 92%, transparent); color: var(--text);" />
+      </div>
+
+      <div style="display: flex; gap: 10px; margin-top: 10px;">
+        <button class="btn outline" id="cancelDeleteBtn" style="flex: 1;" type="button">Cancel</button>
+        <button class="btn primary" id="confirmDeleteBtn" style="flex: 1;" type="button">Verify & Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="Assets/app.js"></script>
+</body>
+</html>

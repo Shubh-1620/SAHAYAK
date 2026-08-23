@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <script>
+    (function() {
+      const saved = localStorage.getItem("theme") || "light";
+      document.documentElement.setAttribute("data-theme", saved);
+
+      // Page Guard: restrict page access to logged-in users only
+      const session = localStorage.getItem("sahayak_session");
+      if (!session) {
+        sessionStorage.setItem("login_required_toast", "true");
+        window.location.href = "index.html";
+      }
+    })();
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sahayak • Dashboard</title>
+  <link rel="stylesheet" href="Assets/styles.css?v=2" />
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="index.html">
+      <span class="brand-mark">📊</span>
+      <span class="brand-name">Sahayak</span>
+    </a>
+
+    <nav class="nav">
+      <a class="nav-link" href="index.html">Home</a>
+      <a class="nav-link" href="explore.html">Explore</a>
+      <a class="nav-link" href="complaints.html">Complaints</a>
+      <a class="nav-link active" href="dashboard.html">Dashboard</a>
+    </nav>
+
+    <div class="topbar-actions" style="gap: 16px;">
+      <button class="btn ghost" id="themeToggle" type="button" style="font-size: 18px; padding: 6px;">🌙</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="dash-top">
+      <div>
+        <h1>Admin Dashboard</h1>
+        <p class="muted">Monitor citizen issues in real-time. Data is read exclusively from offline browser storage.</p>
+      </div>
+    </section>
+
+    <section class="kpis">
+      <div class="kpi">
+        <div class="kpi-title">Water Problem</div>
+        <div class="kpi-value" id="kWater">0</div>
+        <div class="small muted" id="kpWater">0% of total</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-title">Cleanliness</div>
+        <div class="kpi-value" id="kClean">0</div>
+        <div class="small muted" id="kpClean">0% of total</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-title">Roads & Transport</div>
+        <div class="kpi-value" id="kRoad">0</div>
+        <div class="small muted" id="kpRoad">0% of total</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-title">Electricity</div>
+        <div class="kpi-value" id="kElec">0</div>
+        <div class="small muted" id="kpElec">0% of total</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-title">Health Services</div>
+        <div class="kpi-value" id="kHealth">0</div>
+        <div class="small muted" id="kpHealth">0% of total</div>
+      </div>
+      <div class="kpi" style="border-color: var(--primary);">
+        <div class="kpi-title" style="color: var(--primary);">Total Complaints</div>
+        <div class="kpi-value" id="kTotal" style="color: var(--primary);">0</div>
+        <div class="small muted" id="kpTotal">Across 0 districts</div>
+      </div>
+    </section>
+
+    <section class="grid-2">
+      <!-- Left Panel: Problem Type breakdown (Donut) -->
+      <div class="panel">
+        <h3 class="panel-head" style="margin: 0 0 4px 0;">Complaints by Problem Type</h3>
+        <p class="small muted" style="margin: 0 0 16px 0;">Relative breakdown of issues submitted offline.</p>
+        <div class="chart">
+          <div class="donut"></div>
+          <div class="legend">
+            <!-- Filled dynamically by app.js -->
+          </div>
+        </div>
+        <div class="info small muted" style="margin-top: 16px;">
+          <b>Local Insights:</b> All computation, charts, and table logs are processed live in client memory. No telemetry or server syncing is enabled.
+        </div>
+      </div>
+
+      <!-- Right Panel: District breakdown -->
+      <div class="panel">
+        <h3 class="panel-head" style="margin: 0 0 4px 0;">Complaints by District</h3>
+        <p class="small muted" style="margin: 0 0 16px 0;">District-wise breakdown of local issues across categories.</p>
+        <div class="table-wrap">
+          <table class="table" id="districtTable">
+            <thead>
+              <tr>
+                <th>District</th>
+                <th>Water</th>
+                <th>Clean</th>
+                <th>Roads</th>
+                <th>Elec</th>
+                <th>Health</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Filled dynamically by app.js -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel" style="margin-top: 20px;">
+      <h3 class="panel-head" style="margin: 0 0 4px 0;">Recent User Complaints</h3>
+      <p class="small muted" style="margin: 0 0 16px 0;">Scroll down to view and support complaints filed by citizens in your state.</p>
+      <div class="table-wrap" style="overflow-x: auto;">
+        <table class="table" id="recentTable">
+          <thead>
+            <tr>
+              <th style="width:100px;">ID</th>
+              <th>UserName</th>
+              <th>Location</th>
+              <th>Category</th>
+              <th>Details</th>
+              <th style="width:120px;">Support</th>
+              <th style="width:100px;">Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Filled dynamically by app.js -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script src="Assets/app.js?v=2"></script>
+</body>
+</html>
